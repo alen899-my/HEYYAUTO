@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUsers, FaUserTie, FaCheckCircle, FaListAlt } from 'react-icons/fa';
-import '../App.css';
 import axios from 'axios';
+import '../App.css';
+
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState('userDetails');
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [drivers, setDrivers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Fetch users and drivers from the database
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUsersAndDrivers = async () => {
+      setLoading(true);
       try {
         const response = await axios.get('http://localhost:5000/api/users'); // Adjust URL as per your server
-        setUsers(response.data);
-        setLoading(false);
+        const allUsers = response.data;
+        setUsers(allUsers.filter(user => user.role === 'user'));
+        setDrivers(allUsers.filter(user => user.role === 'driver'));
       } catch (err) {
         setError(err.message);
-        setLoading(false);
       }
+      setLoading(false);
     };
 
-    fetchUsers();
+    fetchUsersAndDrivers();
   }, []);
+
   // Handler to switch tabs
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -30,47 +37,83 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       {/* Sidebar */}
       <div className="sidebar">
-        <h2>settings</h2>
+        <h2>Admin Dashboard</h2>
         <ul>
-          <li
-            className={activeTab === 'userDetails' ? 'active' : ''}
-            onClick={() => handleTabClick('userDetails')}
-          >
-            <FaUsers />
-            <span>User Details</span>
+          <li className={activeTab === 'userDetails' ? 'active' : ''} onClick={() => handleTabClick('userDetails')}>
+            <FaUsers /> <span>User Details</span>
           </li>
-          <li
-            className={activeTab === 'driverDetails' ? 'active' : ''}
-            onClick={() => handleTabClick('driverDetails')}
-          >
-            <FaUserTie />
-            <span>Driver Details</span>
+          <li className={activeTab === 'driverDetails' ? 'active' : ''} onClick={() => handleTabClick('driverDetails')}>
+            <FaUserTie /> <span>Driver Details</span>
           </li>
-          <li
-            className={activeTab === 'driverApproval' ? 'active' : ''}
-            onClick={() => handleTabClick('driverApproval')}
-          >
-            <FaCheckCircle />
-            <span>Driver Approval Requests</span>
+          <li className={activeTab === 'driverApproval' ? 'active' : ''} onClick={() => handleTabClick('driverApproval')}>
+            <FaCheckCircle /> <span>Driver Approval</span>
           </li>
-          <li
-            className={activeTab === 'totalUsers' ? 'active' : ''}
-            onClick={() => handleTabClick('totalUsers')}
-          >
-            <FaListAlt />
-            <span>Total Users Count</span>
+          <li className={activeTab === 'totalUsers' ? 'active' : ''} onClick={() => handleTabClick('totalUsers')}>
+            <FaListAlt /> <span>Total Count</span>
           </li>
         </ul>
       </div>
 
       {/* Content Area */}
       <div className="content">
-        {activeTab === 'userDetails' && <div>User Details 
-          
-          </div>}
-        {activeTab === 'driverDetails' && <div>Driver Details </div>}
-        {activeTab === 'driverApproval' && <div>Driver Approval Requests </div>}
-        {activeTab === 'totalUsers' && <div>Total Users Count </div>}
+        {loading && <p>Loading...</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        {activeTab === 'userDetails' && (
+          <div className="details-section">
+            <h3>User Details</h3>
+            {users.length > 0 ? (
+              <div className="grid-container">
+                {users.map((user) => (
+                  <div className="card" key={user._id}>
+                    <h4>{user.fullName}</h4>
+                    <p>Email: {user.email}</p>
+                    <p>Phone: {user.phoneNumber}</p>
+                    <p>Role: {user.role}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No users found</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'driverDetails' && (
+          <div className="details-section">
+            <h3>Driver Details</h3>
+            {drivers.length > 0 ? (
+              <div className="grid-container">
+                {drivers.map((driver) => (
+                  <div className="card" key={driver._id}>
+                    <h4>{driver.fullName}</h4>
+                    <p>Email: {driver.email}</p>
+                    <p>Phone: {driver.phoneNumber}</p>
+                    <p>Vehicle: {driver.vehicleNumber || 'N/A'}</p>
+                    <p>License: {driver.licenseNumber || 'N/A'}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>No drivers found</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'driverApproval' && (
+          <div className="details-section">
+            <h3>Driver Approval Requests</h3>
+            <p>Driver approval requests section coming soon...</p>
+          </div>
+        )}
+
+        {activeTab === 'totalUsers' && (
+          <div className="details-section">
+            <h3>Total Count</h3>
+            <p>Total Users: {users.length}</p>
+            <p>Total Drivers: {drivers.length}</p>
+          </div>
+        )}
       </div>
     </div>
   );
