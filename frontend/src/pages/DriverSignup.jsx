@@ -38,7 +38,7 @@ const DriverSignup = () => {
     });
 
     try {
-      const response = await axios.post("http://localhost:5000/api/driver-register", formDataToSend, {
+      const response = await axios.post("http://localhost:5000/driver-register", formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert(response.data.msg);

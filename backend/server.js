@@ -2,11 +2,16 @@ const express = require("express");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const User = require("./models/User");
+const fs = require('fs');
+const path = require('path');
 const cors = require("cors"); // Import cors
 require("dotenv").config(); // Load environment variables from .env
 
 const app = express();
-
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
 // Basic message for the root route
 app.get("/", (req, res) => {
   res.send("Welcome to the API!");
@@ -21,6 +26,7 @@ app.get("/users", async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 });
+
 
 // Enable CORS for requests from specific origins
 app.use(

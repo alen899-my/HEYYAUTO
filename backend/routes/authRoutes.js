@@ -23,6 +23,9 @@ const upload = multer({ storage });
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.post("/driver-register", upload.single("profileImage"), registerUser);
+router.post("/driver-register", upload.single("profileImage"), (req, res) => {
+  console.log(req.file); // log the uploaded file
+  registerUser(req, res);
+});
 
 module.exports = router;
