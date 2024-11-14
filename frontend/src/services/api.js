@@ -3,7 +3,7 @@
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 export const fetchData = async () => {
-  const response = await fetch(`${backendUrl}/api/data`);
+  const response = await fetch(`${backendUrl}/authRoutes`);
   const data = await response.json();
   return data;
 };
