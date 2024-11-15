@@ -32,6 +32,8 @@ const DriverSignup = () => {
       return;
     }
 
+    formData.role = "driver";
+
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       formDataToSend.append(key, value);

@@ -1,9 +1,10 @@
+// authroutes
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const User = require('../models/User');
 const path = require("path");
-const { registerUser, loginUser } = require("../controllers/authController");
+const { registerUser, loginUser, deleteUser } = require("../controllers/authController");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
@@ -18,10 +19,14 @@ router.get('/api/users', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.delete('/users/:id', deleteUser);
+
+
+// Delete a driver by ID (if using separate controller)
 
 const upload = multer({ storage });
 
-router.post("/register", registerUser);
+router.post("/api/register", registerUser);
 router.post("/login", loginUser);
 router.post("/driver-register", upload.single("profileImage"), (req, res) => {
   console.log(req.file); // log the uploaded file

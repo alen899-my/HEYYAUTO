@@ -3,6 +3,7 @@ import { FaUsers, FaUserTie, FaCheckCircle, FaListAlt } from 'react-icons/fa';
 import axios from 'axios'; 
 import '../App.css';
 
+
 const AdminDashboard = () => { 
   const [activeTab, setActiveTab] = useState('userDetails'); 
   const [users, setUsers] = useState([]); 
@@ -15,10 +16,23 @@ const AdminDashboard = () => {
     const fetchUsersAndDrivers = async () => { 
       setLoading(true); 
       try { 
-        const response = await axios.get('http://localhost:5000/api/users'); // Adjust URL as per your server
-        const allUsers = response.data; 
-        setUsers(allUsers.filter(user => user.role === 'user')); 
-        setDrivers(allUsers.filter(user => user.role === 'driver')); 
+        const response = await axios.get('http://localhost:5000/api/users'); 
+        console.log(response.data); // Adjust URL as per your server
+       
+        console.log("All Users Data:", response.data);
+        const allUsers = response.data;
+        setUsers(allUsers.filter(user => (user.role || '').trim().toLowerCase() === 'user'));
+        setDrivers(allUsers.filter(user => (user.role || '').trim().toLowerCase() === 'driver'));
+        
+console.log("All Users:", allUsers);
+console.log("User Roles:", allUsers.map(user => user.role));
+
+
+//         setUsers(allUsers);
+// setDrivers(allUsers);
+
+        console.log("Drivers state:", drivers); 
+        
       } catch (err) { 
         setError(err.message); 
       } 
@@ -26,12 +40,25 @@ const AdminDashboard = () => {
     }; 
     fetchUsersAndDrivers(); 
   }, []);
-
+  useEffect(() => {
+    console.log("Active Tab:", activeTab);
+ }, [activeTab]);
   // Handler to switch tabs
   const handleTabClick = (tab) => { 
     setActiveTab(tab); 
   };
-
+  const deleteUser = async (userId) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/users/${userId}`);
+      console.log(response.data);
+      alert('User deleted successfully');
+       setUsers(users.filter((user) => user._id !== userId));
+      
+    } catch (error) {
+      console.error('Delete Error:', error);
+      alert('Failed to delete user');
+    }
+  };
   return (
     <div className="admin-dashboard">
       {/* Sidebar */}
@@ -69,6 +96,7 @@ const AdminDashboard = () => {
                     <p>Email: {user.email}</p>
                     <p>Phone: {user.phoneNumber}</p>
                     <p>Role: {user.role}</p>
+                    <button className="delete-button" onClick={() => deleteUser(user._id, 'user')}>Delete User</button>
                   </div>
                 ))}
               </div>
@@ -90,13 +118,15 @@ const AdminDashboard = () => {
                     <p>Phone: {driver.phoneNumber}</p>
                     <p>Vehicle: {driver.vehicleNumber || 'N/A'}</p>
                     <p>License: {driver.licenseNumber || 'N/A'}</p>
+                    <button className="delete-button" onClick={() => deleteUser(driver._id, 'driver')}>Delete Driver</button>
                     {driver.profileImage && (
-                      <img
-                        src={`http://localhost:5000/uploads/${driver.profileImage}`} // Adjust the URL path as per your server configuration
-                        alt="Driver Profile"
-                        style={{ width: '100px', height: '100px', borderRadius: '50%' }}
-                      />
-                    )}
+  <img
+    src={`http://localhost:5000/${driver.profileImage}`} // Updated to correctly interpret the path
+    alt="Driver Profile"
+    style={{ width: '100px', height: '100px', borderRadius: '50%' }}
+  />
+)}
+
                   </div>
                 ))}
               </div>
@@ -116,8 +146,8 @@ const AdminDashboard = () => {
         {activeTab === 'totalUsers' && (
           <div className="details-section">
             <h3>Total Count</h3>
-            <p>Total Users: {users.length}</p>
-            <p>Total Drivers: {drivers.length}</p>
+            <p className='count'>Total Users: {users.length}</p>
+            <p className='count'>Total Drivers: {drivers.length}</p>
           </div>
         )}
       </div>

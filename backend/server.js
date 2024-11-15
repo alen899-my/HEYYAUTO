@@ -1,3 +1,4 @@
+// Server.js
 const express = require("express");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -16,7 +17,7 @@ if (!fs.existsSync(uploadsDir)) {
 app.get("/", (req, res) => {
   res.send("Welcome to the API!");
 });
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Fix: Use `app.get` instead of `router.get`
 app.get("/users", async (req, res) => {
   try {

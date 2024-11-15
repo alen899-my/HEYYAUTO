@@ -22,10 +22,10 @@ const Signup = () => {
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
-    }
+    }  formData.role = "user";
 
     try {
-      const response = await axios.post("http://localhost:5000/register", formData);
+      const response = await axios.post("http://localhost:5000/api/register", formData);
       alert(response.data.msg);
       navigate("/login");
     } catch (error) {

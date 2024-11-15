@@ -1,3 +1,4 @@
+// user.js
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -8,7 +9,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
 
     // Role can be user, driver, or admin
-    role: { type: String, enum: ["user", "driver", "admin"], default: "user" },
+    role: { type: String, enum: ["user", "driver", "admin"], default: "driver" },
 
     // Driver-specific fields (only applicable if role is 'driver')
     vehicleNumber: {
@@ -23,7 +24,7 @@ const userSchema = new mongoose.Schema(
         return this.role === "driver";
       },
     },
-    profileImage: { type: String },
+    profileImage: { type: String, required: function () { return this.role === "driver"; } },
 
     // Driver approval status
     approvalStatus: {
