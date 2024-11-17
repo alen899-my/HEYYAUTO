@@ -3,7 +3,7 @@
 
 
 export const fetchData = async () => {
-  const response = await fetch('https://heyyautoo.onrender.com/register');
+  const response = await fetch('https://heyyautooo.onrender.com/');
   const data = await response.json();
   return data;
 };

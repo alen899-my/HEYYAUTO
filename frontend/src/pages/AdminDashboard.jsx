@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     const fetchUsersAndDrivers = async () => { 
       setLoading(true); 
       try { 
-        const response = await axios.get('https://heyyautoo.onrender.comapi/users'); 
+        const response = await axios.get('https://heyyautooo.onrender.com/api/users'); 
         console.log(response.data); // Adjust URL as per your server
        
         console.log("All Users Data:", response.data);
@@ -49,7 +49,7 @@ console.log("User Roles:", allUsers.map(user => user.role));
   };
   const deleteUser = async (userId) => {
     try {
-      const response = await axios.delete(`https://heyyautoo.onrender.comusers/${userId}`, {
+      const response = await axios.delete(`https://heyyautooo.onrender.com/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -69,7 +69,7 @@ console.log("User Roles:", allUsers.map(user => user.role));
       if (!token) throw new Error('No token found. Please log in.');
   
       const response = await axios.patch(
-        `https://heyyautoo.onrender.comapi/users/${driverId}`,
+        `https://heyyautooo.onrender.com/api/users/${driverId}`,
         { approvalStatus: 'approved' },
         {
           headers: {
@@ -111,7 +111,7 @@ console.log("User Roles:", allUsers.map(user => user.role));
       if (!token) throw new Error('No token found. Please log in.');
   
       const response = await axios.patch(
-        `https://heyyautoo.onrender.com/register0/api/users/${driverId}`,
+        `https://heyyautooo.onrender.com/api/users/${driverId}`,
         { approvalStatus: 'rejected' },
         {
           headers: {
@@ -207,7 +207,7 @@ console.log("User Roles:", allUsers.map(user => user.role));
                     <button className="delete-button" onClick={() => deleteUser(driver._id, 'driver')}>Delete Driver</button>
                     {driver.profileImage && (
   <img
-    src={`https://heyyautoo.onrender.com${driver.profileImage}`} // Updated to correctly interpret the path
+    src={`https://heyyautooo.onrender.com${driver.profileImage}`} // Updated to correctly interpret the path
     alt="Driver Profile"
     style={{ width: '100px', height: '100px', borderRadius: '50%' }}
   />
