@@ -25,7 +25,7 @@ const Signup = () => {
     }  formData.role = "user";
 
     try {
-      const response = await axios.post("http://localhost:5000/api/register", formData);
+      const response = await axios.post("https://heyyautoo.onrender.com/register/api/register", formData);
       alert(response.data.msg);
       navigate("/login");
     } catch (error) {

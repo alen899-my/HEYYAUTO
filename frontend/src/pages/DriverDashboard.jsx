@@ -27,7 +27,7 @@ const DriverDashboard = () => {
   const fetchDriverProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/users/profile', {
+      const response = await axios.get('https://heyyautoo.onrender.com/register/users/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +50,7 @@ const DriverDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       setIsLoading(true);
-      const response = await axios.get('http://localhost:5000/api/approval-status', {
+      const response = await axios.get('https://heyyautoo.onrender.com/register/api/approval-status', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,7 +70,7 @@ const DriverDashboard = () => {
       const token = localStorage.getItem('token');
       setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:5000/api/request-approval',
+        'https://heyyautoo.onrender.com/register/api/request-approval',
         {}, // Empty payload
         {
           headers: {
@@ -149,7 +149,7 @@ const DriverDashboard = () => {
             {driverProfile ? (
               <div className="profile-details">
                 {driverProfile.profileImage && (
-                  <img src={`http://localhost:5000/${driverProfile.profileImage}`} alt="Profile" className="profile-image" />
+                  <img src={`https://heyyautoo.onrender.com/register/${driverProfile.profileImage}`} alt="Profile" className="profile-image" />
                 )}
                 <div className="profile-info">
                   <button className={`availability-btn ${isReady ? 'ready' : 'not-ready'}`} onClick={handleToggle}>
