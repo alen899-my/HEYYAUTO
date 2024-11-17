@@ -40,7 +40,7 @@ const DriverSignup = () => {
     });
 
     try {
-      const response = await axios.post("https://heyyautoo.onrender.com/register/driver-register", formDataToSend, {
+      const response = await axios.post("https://heyyautoo.onrender.comdriver-register", formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert(response.data.msg);
