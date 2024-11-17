@@ -2,12 +2,15 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
 const mongoose = require('mongoose');
+
 
 
 exports.registerUser = async (req, res) => {
   const { fullName, email, phoneNumber, password, vehicleNumber, licenseNumber } = req.body;
-  const profileImage = req.file ? req.file.filename : null;
+  const profileImage = req.file ? `uploads/${req.file.filename}` : null;
+
 
 
   try {

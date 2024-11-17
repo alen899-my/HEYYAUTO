@@ -49,16 +49,102 @@ console.log("User Roles:", allUsers.map(user => user.role));
   };
   const deleteUser = async (userId) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/users/${userId}`);
+      const response = await axios.delete(`http://localhost:5000/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       console.log(response.data);
       alert('User deleted successfully');
-       setUsers(users.filter((user) => user._id !== userId));
-      
+      setUsers(users.filter((user) => user._id !== userId));
     } catch (error) {
       console.error('Delete Error:', error);
       alert('Failed to delete user');
     }
   };
+  
+  const approveDriver = async (driverId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found. Please log in.');
+  
+      const response = await axios.patch(
+        `http://localhost:5000/api/users/${driverId}`,
+        { approvalStatus: 'approved' },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log('Driver approved successfully:', response.data);
+  
+      // Update driver list
+      setDrivers(
+        drivers.map((driver) =>
+          driver._id === driverId ? { ...driver, approvalStatus: 'approved' } : driver
+        )
+      );
+  
+      alert(response.data.msg); // Notify the admin
+    } catch (err) {
+      if (err.response) {
+        if (err.response.status === 401) {
+          alert('Unauthorized: Please log in again.');
+        } else if (err.response.status === 403) {
+          alert('Forbidden: You do not have access to perform this action.');
+        } else {
+          alert(`Error: ${err.response.data.msg || 'Something went wrong'}`);
+        }
+      } else {
+        alert('Failed to approve driver. Check the console for details.');
+      }
+      console.error('Error approving driver:', err);
+    }
+  };
+  
+  
+  const rejectDriver = async (driverId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found. Please log in.');
+  
+      const response = await axios.patch(
+        `http://localhost:5000/api/users/${driverId}`,
+        { approvalStatus: 'rejected' },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Update UI
+      setDrivers(
+        drivers.map((driver) =>
+          driver._id === driverId ? { ...driver, approvalStatus: 'rejected' } : driver
+        )
+      );
+      alert('Driver rejected successfully');
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          console.error('Unauthorized: Invalid or expired token.');
+          alert('Unauthorized: Please log in again.');
+        } else if (error.response.status === 403) {
+          console.error('Forbidden: Insufficient permissions.');
+          alert('Forbidden: You do not have access to perform this action.');
+        } else {
+          console.error('Server error:', error.response.data);
+          alert('Failed to reject driver');
+        }
+      } else {
+        console.error('Error rejecting driver:', error.message);
+      }
+    }
+  };
+  
   return (
     <div className="admin-dashboard">
       {/* Sidebar */}
@@ -136,21 +222,49 @@ console.log("User Roles:", allUsers.map(user => user.role));
           </div>
         )}
 
-        {activeTab === 'driverApproval' && (
-          <div className="details-section">
-            <h3>Driver Approval Requests</h3>
-            <p>Driver approval requests section coming soon...</p>
-          </div>
-        )}
-
-        {activeTab === 'totalUsers' && (
-          <div className="details-section">
-            <h3>Total Count</h3>
-            <p className='count'>Total Users: {users.length}</p>
-            <p className='count'>Total Drivers: {drivers.length}</p>
-          </div>
-        )}
+{activeTab === 'driverApproval' && (
+  <div className="details-section">
+    <h3>Driver Approval Requests</h3>
+    {drivers.filter((driver) => driver.approvalStatus === 'pending').length > 0 ? (
+      <div className="grid-container">
+        {drivers
+          .filter((driver) => driver.approvalStatus === 'pending')
+          .map((driver) => (
+            <div className="card" key={driver._id}>
+              <h4>{driver.fullName}</h4>
+              <p>Email: {driver.email}</p>
+              <p>Phone: {driver.phoneNumber}</p>
+              <button
+                className="approve-button"
+                onClick={() => approveDriver(driver._id)}
+              >
+                Approve
+              </button>
+              <button
+                className="reject-button"
+                onClick={() => rejectDriver(driver._id)}
+              >
+                Reject
+              </button>
+            </div>
+          ))}
       </div>
+    ) : (
+      <p>No pending approval requests</p>
+    )}
+  </div>
+)}{activeTab === 'totalUsers' && (
+  <div className="details-section">
+    <h3>Total Users and Drivers</h3>
+    <div className="total-counts">
+      <p><strong>Total Users:</strong> {users.length}</p>
+      <p><strong>Total Drivers:</strong> {drivers.length}</p>
+    </div>
+  </div>
+)}
+
+      </div>
+      
     </div>
   );
 };

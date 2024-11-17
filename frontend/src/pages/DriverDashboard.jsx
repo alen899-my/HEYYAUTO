@@ -17,14 +17,16 @@ const DriverDashboard = () => {
   const [error, setError] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('');
-  
+  const [isLoading, setIsLoading] = useState(false); // Approval request loading state
+
   const handleToggle = () => {
     setIsReady(!isReady);
   };
 
+  // Fetch Driver Profile
   const fetchDriverProfile = async () => {
     try {
-      const token = localStorage.getItem('token'); 
+      const token = localStorage.getItem('token');
       const response = await axios.get('http://localhost:5000/users/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -43,32 +45,60 @@ const DriverDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDriverProfile();
-  }, []);
+  // Fetch Approval Status
+  const fetchApprovalStatus = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      setIsLoading(true);
+      const response = await axios.get('http://localhost:5000/api/approval-status', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setApprovalStatus(response.data.status || 'No request found.');
+    } catch (err) {
+      console.error('Error fetching approval status:', err.response?.data || err.message);
+      setApprovalStatus('Could not fetch approval status.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Handle Approval Request
   const handleApprovalRequest = async () => {
     try {
       const token = localStorage.getItem('token');
+      setIsLoading(true);
       const response = await axios.post(
-        'http://localhost:5000/users/request-approval',
-        {},
+        'http://localhost:5000/api/request-approval',
+        {}, // Empty payload
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.data.success) {
-        setApprovalStatus('Approval request sent successfully!');
-      } else {
-        setApprovalStatus('Failed to send approval request.');
-      }
+      setApprovalStatus(response.data.msg || 'Request sent successfully.');
     } catch (err) {
-      console.error('Error sending approval request:', err);
-      setApprovalStatus('Error sending approval request.');
+      const errorMessage = err.response?.data.msg || 'Failed to send approval request.';
+      console.error('Error sending approval request:', errorMessage);
+      setApprovalStatus(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    fetchDriverProfile();
+  }, []);
+
+  // Fetch approval status whenever the approval request tab is active
+  useEffect(() => {
+    if (activeTab === 'approvalRequest') {
+      fetchApprovalStatus();
+    }
+  }, [activeTab]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -119,11 +149,7 @@ const DriverDashboard = () => {
             {driverProfile ? (
               <div className="profile-details">
                 {driverProfile.profileImage && (
-                  <img
-                    src={`http://localhost:5000/${driverProfile.profileImage}`}
-                    alt="Profile"
-                    className="profile-image"
-                  />
+                  <img src={`http://localhost:5000/${driverProfile.profileImage}`} alt="Profile" className="profile-image" />
                 )}
                 <div className="profile-info">
                   <button className={`availability-btn ${isReady ? 'ready' : 'not-ready'}`} onClick={handleToggle}>
@@ -143,17 +169,28 @@ const DriverDashboard = () => {
           </div>
         )}
 
-        {/* Driver Approval Request Section */}
-        {activeTab === 'approvalRequest' && (
-          <div className="approval-section">
-            <h3>Driver Approval Request</h3>
-            <p>Request approval to be listed as an official driver on our platform.</p>
-            <button className="request-approval-btn" onClick={handleApprovalRequest}>
-              Send Approval Request
-            </button>
-            {approvalStatus && <p className="approval-status">{approvalStatus}</p>}
-          </div>
-        )}
+      {/* Driver Approval Request Section */}
+{activeTab === 'approvalRequest' && (
+  <div className="approval-section">
+    <h3>Driver Approval Request</h3>
+    {approvalStatus === 'approved' ? (
+      <p className="approval-success">🎉 Congratulations! You are approved as a driver.</p>
+    ) : (
+      <>
+        <p>Request approval to be listed as an official driver on our platform.</p>
+        <button
+          className="request-approval-btn"
+          onClick={handleApprovalRequest}
+          disabled={isLoading || approvalStatus === 'pending'}
+        >
+          {isLoading ? 'Sending...' : approvalStatus === 'pending' ? 'Approval Pending' : 'Send Approval Request'}
+        </button>
+      </>
+    )}
+    {approvalStatus && <p className="approval-status">{approvalStatus}</p>}
+  </div>
+)}
+
       </div>
     </div>
   );

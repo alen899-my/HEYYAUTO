@@ -1255,3 +1255,42 @@ driver dah */
   margin-top: 10px;
   color: green;
 }
+.approval-status {
+  margin-top: 10px;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.approval-status.approved {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.approval-status.rejected {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.approval-status.pending {
+  color: #856404;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+}
+
+.request-approval-btn {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.request-approval-btn:disabled {
+  background-color: #d6d6d6;
+  cursor: not-allowed;
+}
