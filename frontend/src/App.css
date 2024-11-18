@@ -1105,6 +1105,8 @@ driver dah */
 .content {
   flex: 1;
   padding: 20px;
+  background-color: #ecf0f1;
+  overflow-y: auto;
 }
 
 .booking-card {
@@ -1294,130 +1296,153 @@ driver dah */
   background-color: #d6d6d6;
   cursor: not-allowed;
 }
-  /* user dasboard */
-  .home-section {
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* General Styling */
+.dashboard-content {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background-color: #ecf0f1;
+}
+
+.ride-section {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* Left Section: Find a Ride */
+.ride-left {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ride-left h2 {
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.ride-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-button {
+  padding: 10px;
+  background-color: #2ecc71;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #27ae60;
+}
+
+/* Right Section: Available Drivers */
+.ride-right {
+  flex: 2;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ride-right h2 {
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 20px;
+}
+
+.drivers-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.driver-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.driver-card:hover {
+  transform: translateY(-5px);
+}
+
+.driver-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.driver-card p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.driver-card p strong {
+  color: #34495e;
+}
+
+.driver-book {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.driver-book:hover {
+  background-color: #2980b9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ride-section {
+    flex-direction: column;
   }
-  
-  .home-section h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    color: #34495e;
-  }
-  
-  .fromto-container {
-    background-color: #ecf0f1;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 600px;
-  }
-  
-  .fromto-container h2 {
-    font-size: 22px;
-    margin-bottom: 20px;
-    color: #2c3e50;
-  }
-  
-  .fromto-container .form-group {
-    margin-bottom: 15px;
-    text-align: left;
-  }
-  
-  .fromto-container label {
-    font-weight: bold;
-    color: #2c3e50;
-  }
-  
-  .fromto-container input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #bdc3c7;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .fromto-container .submit-button {
-    background-color: #1abc9c;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .fromto-container .submit-button:hover {
-    background-color: #16a085;
-  }
-  .drivers-container {
-    margin: 30px auto;
-    max-width: 800px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .drivers-container h2 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 20px;
-  }
-  
+
   .drivers-list {
-    list-style-type: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-  
-  .driver-card {
-    width: 250px;
-    padding: 15px;
-    background-color: #ecf0f1;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .driver-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .driver-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 15px;
-  }
-  
-  .driver-card p {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #34495e;
-  }
-  
-  .driver-card .driver-book {
-    background-color: #1abc9c;
-    color: #fff;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .driver-card .driver-book:hover {
-    background-color: #16a085;
-  }
-  
+}

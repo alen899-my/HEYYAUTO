@@ -162,47 +162,40 @@ const fetchUserProfile = async () => {
       <div className="content">
         {/* Home Section */}
         {activeTab === 'home' && (
-          <div>
-         <div className="dashboard-content">
-          <div className="home-section">
-          
-          {user ? <h1>Welcome, {user.name}!</h1> : <p>Loading...</p>}
-            <div className="dashboard-content">
-            <div className="fromto-container">
-            <form  onSubmit={ handleSubmit } >
-            <h2>Find a Ride</h2>
-            
-            <div className="form-group">
-  <label htmlFor="from">From:</label>
-  <input
-    type="text"
-    id="from"
-    placeholder="Enter starting point"
-    value={from} // Bind the state
-    onChange={(e) => setFrom(e.target.value)} // Update the state
-    required
-  />
-</div>
-<div className="form-group">
-  <label htmlFor="to">To:</label>
-  <input
-    type="text"
-    id="to"
-    placeholder="Enter destination"
-    value={to} // Bind the state
-    onChange={(e) => setTo(e.target.value)} // Update the state
-    required
-  />
-</div>
-            <button type="submit" className="submit-button">
-              Search Drivers
-            </button>
-          </form>
+  <div className="dashboard-content">
+    <div className="ride-section">
+      <div className="ride-left">
+        <h2>Find a Ride</h2>
+        <form onSubmit={handleSubmit} className="ride-form">
+          <div className="form-group">
+            <label htmlFor="from">From:</label>
+            <input
+              type="text"
+              id="from"
+              placeholder="Enter starting point"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              required
+            />
           </div>
+          <div className="form-group">
+            <label htmlFor="to">To:</label>
+            <input
+              type="text"
+              id="to"
+              placeholder="Enter destination"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              required
+            />
           </div>
-          </div>
-          </div>
-        <div className="drivers-container">
+          <button type="submit" className="submit-button">
+            Search Drivers
+          </button>
+        </form>
+      </div>
+
+      <div className="ride-right">
         <h2>Available Drivers</h2>
         {drivers.length > 0 ? (
           <ul className="drivers-list">
@@ -210,7 +203,7 @@ const fetchUserProfile = async () => {
               <li key={driver._id} className="driver-card">
                 {driver.profileImage && (
                   <img
-                  src={`http://localhost:5000/${driver.profileImage}`} 
+                    src={`http://localhost:5000/${driver.profileImage}`}
                     alt="Driver Profile"
                     className="driver-image"
                   />
@@ -225,6 +218,9 @@ const fetchUserProfile = async () => {
         ) : (
           <p>No drivers found at this location.</p>
         )}
+      </div>
+ 
+
       </div>
           </div>
 
