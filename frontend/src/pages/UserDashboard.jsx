@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   FaHome,
   FaUser,
@@ -10,24 +11,41 @@ import {
 } from 'react-icons/fa';
 import '../App.css';
 
+
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample data for drivers and bookings
-  const drivers = [
-    { id: 1, name: 'Ravi Kumar', location: 'Central Park', rating: 4.5 },
-    { id: 2, name: 'Suresh Gupta', location: 'City Mall', rating: 4.0 },
-  ];
+  // Fetch User Profile
+  // Fetch User Profile
+const fetchUserProfile = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found. Please log in.');
+    }
 
-  const bookings = [
-    { id: 1, driver: 'Ravi Kumar', date: '14 Nov 2024', status: 'Completed' },
-    { id: 2, driver: 'Suresh Gupta', date: '12 Nov 2024', status: 'Active' },
-  ];
+    const response = await axios.get('http://localhost:5000/users/profile', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  const paymentHistory = [
-    { id: 1, amount: '₹150', date: '10 Nov 2024', method: 'Credit Card' },
-    { id: 2, amount: '₹200', date: '12 Nov 2024', method: 'UPI' },
-  ];
+    setUserProfile(response.data);
+    setLoading(false);
+  } catch (err) {
+    console.error('Error fetching user profile:', err.response || err.message);
+    setError(err.response?.data?.msg || 'Failed to load user profile');
+    setLoading(false);
+  }
+};
+
+  
+  useEffect(() => {
+    if (activeTab === 'profile') {
+      fetchUserProfile();
+    }
+  }, [activeTab]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -89,32 +107,35 @@ const UserDashboard = () => {
         {/* Home Section */}
         {activeTab === 'home' && (
           <div className="home-section">
-            <h3>Select Location</h3>
-            <input type="text" placeholder="Enter your location" />
-            <button>Search</button>
-            <h4>Available Drivers</h4>
-            <ul>
-              {drivers.map((driver) => (
-                <li key={driver.id}>
-                  <strong>{driver.name}</strong> - {driver.location} ⭐{driver.rating}
-                  <button>Book Now</button>
-                </li>
-              ))}
-            </ul>
+            <h3>Welcome to the User Dashboard</h3>
+            
           </div>
         )}
 
-        {/* Profile Section */}
+        {/* User Profile Section */}
         {activeTab === 'profile' && (
-          <div className="profile-section">
-            <h3>Profile Information</h3>
-            <p>Name: Alen Joseph</p>
-            <p>Email: alen@example.com</p>
-            <p>Phone: +91 9876543210</p>
-            <button>Edit Profile</button>
+          <div className="profile-card">
+            <h3>My Profile</h3>
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p style={{ color: 'red' }}>{error}</p>
+            ) : (
+              userProfile && (
+                <div className="profile-details">
+                 
+                  <div className="profile-info">
+                    <h4>{userProfile.fullName}</h4>
+                    <p><strong>Email:</strong> {userProfile.email}</p>
+                    <p><strong>Phone:</strong> {userProfile.phoneNumber}</p>
+                   
+                    <button className="edit-profile-btn">Edit Profile</button>
+                  </div>
+                </div>
+              )
+            )}
           </div>
         )}
-
         {/* Bookings Section */}
         {activeTab === 'bookings' && (
           <div className="bookings-section">

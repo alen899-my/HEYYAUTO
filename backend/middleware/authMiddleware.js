@@ -1,29 +1,39 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-const authMiddleware = (roles = []) => {
-  return (req, res, next) => {
+// Middleware to protect routes based on roles
+const authMiddleware = (roles = []) => async (req, res, next) => {
+  try {
     // Extract the token from the Authorization header (formatted as "Bearer token")
-    const token = req.header("Authorization")?.split(" ")[1];
+    const token = req.header('Authorization')?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ msg: "No token, authorization denied" });
+      return res.status(401).json({ msg: 'No token provided' });
     }
 
-    try {
-      // Verify the token using the secret
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded; // Attach the decoded payload (e.g., user data) to req.user
+    // Verify the token using the secret
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id); // Attach the decoded user to the request object
 
-      // If roles are specified, check if the user's role is allowed
-      if (roles.length && !roles.includes(req.user.role)) {
-        return res.status(403).json({ msg: "Access denied for this role" });
+    if (!req.user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Check if user has required roles (if roles array is provided)
+    if (roles.length && !roles.includes(req.user.role)) {
+      // If roles are provided, check if the user has one of the allowed roles
+      if (req.user.role === 'user' && req.originalUrl === '/users/profile') {
+        // Allow users to access the profile route (for themselves)
+        return next();
       }
-
-      // If everything checks out, proceed to the next middleware/route handler
-      next();
-    } catch (error) {
-      res.status(401).json({ msg: "Invalid or expired token" });
+      return res.status(403).json({ msg: 'Access denied for this role' });
     }
-  };
+
+    // Proceed to the next middleware or route handler if all checks pass
+    next();
+  } catch (error) {
+    console.error('Auth error:', error.message);
+    return res.status(401).json({ msg: 'Invalid or expired token' });
+  }
 };
 
 module.exports = authMiddleware;

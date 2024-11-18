@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema(
         return this.role === "driver";
       },
     },
+    Location: {
+      type: String,
+      required: function () {
+        return this.role === "driver";
+      },
+    },
     licenseNumber: {
       type: String,
       required: function () {

@@ -8,8 +8,9 @@ const mongoose = require('mongoose');
 
 
 exports.registerUser = async (req, res) => {
-  const { fullName, email, phoneNumber, password, vehicleNumber, licenseNumber } = req.body;
+  const { fullName, email, phoneNumber,Location, password, vehicleNumber, licenseNumber } = req.body;
   const profileImage = req.file ? `uploads/${req.file.filename}` : null;
+
 
 
 
@@ -19,7 +20,7 @@ exports.registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ 
-      fullName, email, phoneNumber, password: hashedPassword, 
+      fullName, email, phoneNumber,Location, password: hashedPassword, 
       vehicleNumber, licenseNumber, profileImage,
       role: req.body.role || "user"  // Default role to "user"
     });

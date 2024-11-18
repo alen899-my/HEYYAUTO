@@ -27,7 +27,7 @@ const DriverDashboard = () => {
   const fetchDriverProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://heyyautooo.onrender.com/users/profile', {
+      const response = await axios.get('http://localhost:5000/users/profile', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +50,7 @@ const DriverDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       setIsLoading(true);
-      const response = await axios.get('https://heyyautooo.onrender.com/api/approval-status', {
+      const response = await axios.get('http://localhost:5000/api/approval-status', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,7 +70,7 @@ const DriverDashboard = () => {
       const token = localStorage.getItem('token');
       setIsLoading(true);
       const response = await axios.post(
-        'https://heyyautooo.onrender.com/api/request-approval',
+        'http://localhost:5000/api/request-approval',
         {}, // Empty payload
         {
           headers: {
@@ -149,7 +149,13 @@ const DriverDashboard = () => {
             {driverProfile ? (
               <div className="profile-details">
                 {driverProfile.profileImage && (
-                  <img src={`https://heyyautooo.onrender.com${driverProfile.profileImage}`} alt="Profile" className="profile-image" />
+                 <img
+                 src={`http://localhost:5000/${driverProfile.profileImage}`}
+                 alt="Profile"
+                 className="profile-image"
+                 onError={(e) => e.target.src = 'https://media.istockphoto.com/id/1388366504/photo/flying-through-the-futuristic-tunnel-abstract-3d-animation-data-network-virtual-reality.jpg?s=1024x1024&w=is&k=20&c=VOxwPgc5OsM-HY4rPoH304ASY7R07G9gAIcnfhuWVxg='} // Fallback image
+               />
+               
                 )}
                 <div className="profile-info">
                   <button className={`availability-btn ${isReady ? 'ready' : 'not-ready'}`} onClick={handleToggle}>
@@ -158,6 +164,7 @@ const DriverDashboard = () => {
                   <h4>{driverProfile.fullName}</h4>
                   <p><strong>Email:</strong> {driverProfile.email}</p>
                   <p><strong>Phone:</strong> {driverProfile.phoneNumber}</p>
+                  <p><strong>Location:</strong> {driverProfile.Location}</p>
                   <p><strong>Vehicle No:</strong> {driverProfile.vehicleNumber}</p>
                   <p><strong>License No:</strong> {driverProfile.licenseNumber}</p>
                   <button className="edit-profile-btn">Edit Profile</button>

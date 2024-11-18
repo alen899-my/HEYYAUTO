@@ -9,6 +9,7 @@ const DriverSignup = () => {
     fullName: "",
     email: "",
     phoneNumber: "",
+    Location: "",
     vehicleNumber: "",
     licenseNumber: "",
     password: "",
@@ -40,7 +41,7 @@ const DriverSignup = () => {
     });
 
     try {
-      const response = await axios.post("https://heyyautooo.onrender.com/driver-register", formDataToSend, {
+      const response = await axios.post("http://localhost:5000/driver-register", formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert(response.data.msg);
@@ -58,6 +59,8 @@ const DriverSignup = () => {
           <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} required />
           <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
           <input type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleChange} required />
+          <input type="text" name="Location" placeholder="main location" value={formData.Location} onChange={handleChange} required />
+
           <input type="text" name="vehicleNumber" placeholder="Vehicle Number" value={formData.vehicleNumber} onChange={handleChange} required />
           <input type="text" name="licenseNumber" placeholder="License Number" value={formData.licenseNumber} onChange={handleChange} required />
           <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />

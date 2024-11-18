@@ -92,20 +92,34 @@ router.patch('/api/users/:id', authMiddleware(['admin']), async (req, res) => {
 });
 
 // Get driver profile
-router.get("/users/profile", authMiddleware(['driver']), async (req, res) => {
+// router.get("/users/profile", authMiddleware(['driver']), async (req, res) => {
+//   try {
+//     const driver = await User.findById(req.user.id);
+
+//     if (!driver || driver.role !== 'driver') {
+//       return res.status(404).json({ msg: "Driver profile not found" });
+//     }
+
+//     res.status(200).json(driver);
+//   } catch (error) {
+//     console.error("Error fetching driver profile:", error);
+//     res.status(500).json({ msg: "Server error" });
+//   }
+// });
+// Fetch User Profile Route
+router.get('/users/profile', authMiddleware(), async (req, res) => {
   try {
-    const driver = await User.findById(req.user.id);
-
-    if (!driver || driver.role !== 'driver') {
-      return res.status(404).json({ msg: "Driver profile not found" });
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
     }
-
-    res.status(200).json(driver);
+    res.status(200).json(user);
   } catch (error) {
-    console.error("Error fetching driver profile:", error);
-    res.status(500).json({ msg: "Server error" });
+    console.error('Error fetching user profile:', error.message);
+    res.status(500).json({ msg: 'Server error' });
   }
 });
+
 
 // Register and login routes
 router.post("/api/register", registerUser);

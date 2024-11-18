@@ -45,7 +45,7 @@ app.use(express.json()); // Middleware to parse JSON
 app.use("/", authRoutes);
 
 const corsOptions = {
-  origin: ['https://heyyautooo.onrender.com'], // allow requests from this origin
+  origin: ['http://localhost:5000'], // allow requests from this origin
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
