@@ -11,13 +11,46 @@ import {
 } from 'react-icons/fa';
 import '../App.css';
 
+import { useNavigate } from 'react-router-dom';
+
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [user, setUser] = useState(null);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [drivers, setDrivers] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      try {
+        const response = await fetch('http://localhost:5000/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          mode: 'cors', // Add this line
+        });
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+    fetchUser();
+  }, [navigate]);
+  
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   handleSearch(from, to); // Call the handleSearch function();
+  // };
   // Fetch User Profile
   // Fetch User Profile
 const fetchUserProfile = async () => {
@@ -50,6 +83,29 @@ const fetchUserProfile = async () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+  const fetchDrivers = async () => {
+    console.log('Fetching drivers...');
+    console.log('From:', from);
+  console.log('To:', to);
+  if (!from || !to) {
+    console.error('Error: from and to locations are required');
+    return;
+  }
+    try {
+      const response = await fetch(`http://localhost:5000/api/drivers/${from}/${to}`);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      setDrivers(data);
+    } catch (error) {
+      console.error('Error fetching drivers:', error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetchDrivers();
+  };
+
 
   return (
     <div className="user-dashboard">
@@ -106,10 +162,73 @@ const fetchUserProfile = async () => {
       <div className="content">
         {/* Home Section */}
         {activeTab === 'home' && (
+          <div>
+         <div className="dashboard-content">
           <div className="home-section">
-            <h3>Welcome to the User Dashboard</h3>
+          
+          {user ? <h1>Welcome, {user.name}!</h1> : <p>Loading...</p>}
+            <div className="dashboard-content">
+            <div className="fromto-container">
+            <form  onSubmit={ handleSubmit } >
+            <h2>Find a Ride</h2>
             
+            <div className="form-group">
+  <label htmlFor="from">From:</label>
+  <input
+    type="text"
+    id="from"
+    placeholder="Enter starting point"
+    value={from} // Bind the state
+    onChange={(e) => setFrom(e.target.value)} // Update the state
+    required
+  />
+</div>
+<div className="form-group">
+  <label htmlFor="to">To:</label>
+  <input
+    type="text"
+    id="to"
+    placeholder="Enter destination"
+    value={to} // Bind the state
+    onChange={(e) => setTo(e.target.value)} // Update the state
+    required
+  />
+</div>
+            <button type="submit" className="submit-button">
+              Search Drivers
+            </button>
+          </form>
           </div>
+          </div>
+          </div>
+          </div>
+        <div className="drivers-container">
+        <h2>Available Drivers</h2>
+        {drivers.length > 0 ? (
+          <ul className="drivers-list">
+            {drivers.map((driver) => (
+              <li key={driver._id} className="driver-card">
+                {driver.profileImage && (
+                  <img
+                  src={`http://localhost:5000/${driver.profileImage}`} 
+                    alt="Driver Profile"
+                    className="driver-image"
+                  />
+                )}
+                <p><strong>Name:</strong> {driver.name}</p>
+                <p><strong>Vehicle Number:</strong> {driver.vehicleNumber}</p>
+                <p><strong>License Number:</strong> {driver.licenseNumber}</p>
+                <button className="driver-book">Book</button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No drivers found at this location.</p>
+        )}
+      </div>
+          </div>
+
+
         )}
 
         {/* User Profile Section */}
@@ -123,6 +242,7 @@ const fetchUserProfile = async () => {
             ) : (
               userProfile && (
                 <div className="profile-details">
+                  
                  
                   <div className="profile-info">
                     <h4>{userProfile.fullName}</h4>
