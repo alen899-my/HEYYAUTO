@@ -24,7 +24,13 @@ const UserDashboard = () => {
   const [to, setTo] = useState('');
   const [drivers, setDrivers] = useState([]);
   const navigate = useNavigate();
-  useEffect(() => {
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [pickUpPoint, setPickUpPoint] = useState('');
+  const [bookingDate, setBookingDate] = useState('');
+  const [bookingTime, setBookingTime] = useState('');
+  const [newBookings, setNewBookings] = useState([]);
+  useEffect(() => {    
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -105,7 +111,41 @@ const fetchUserProfile = async () => {
     e.preventDefault();
     fetchDrivers();
   };
-
+   
+  const handleBookDriver = (driver) => {
+    setSelectedDriver(driver);
+    setShowBookingModal(true);
+  };
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/bookings',
+        {
+          driverId: selectedDriver._id,
+          pickUpPoint,
+          bookingDate,
+          bookingTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        alert('Booking Confirmed!');
+        setShowBookingModal(false);
+        setSelectedDriver(null);
+       
+      }
+    } catch (error) {
+      console.error('Error booking driver:', error);
+    }
+  };
+  
+ 
 
   return (
     <div className="user-dashboard">
@@ -211,21 +251,57 @@ const fetchUserProfile = async () => {
                 <p><strong>Name:</strong> {driver.name}</p>
                 <p><strong>Vehicle Number:</strong> {driver.vehicleNumber}</p>
                 <p><strong>License Number:</strong> {driver.licenseNumber}</p>
-                <button className="driver-book">Book</button>
+                <button onClick={() => handleBookDriver(driver)} className="driver-book">Book</button>
               </li>
             ))}
           </ul>
         ) : (
           <p>No drivers found at this location.</p>
         )}
+        
       </div>
  
 
       </div>
+      
           </div>
 
 
         )}
+        
+       
+        {showBookingModal && selectedDriver && (
+  <div className="modal">
+    <form onSubmit={handleBookingSubmit}>
+      <h3>Book Driver - {selectedDriver.name}</h3>
+      <input
+        type="text"
+        placeholder="Pick-Up Point"
+        value={pickUpPoint}
+        onChange={(e) => setPickUpPoint(e.target.value)}
+        required
+      />
+      <input
+        type="date"
+        value={bookingDate}
+        onChange={(e) => setBookingDate(e.target.value)}
+        required
+      />
+      <input
+        type="time"
+        value={bookingTime}
+        onChange={(e) => setBookingTime(e.target.value)}
+        required
+      />
+      <button type="submit">Confirm Booking</button>
+      <button type="button" onClick={() => setShowBookingModal(false)}>
+        Cancel
+      </button>
+    </form>
+  </div>
+)}
+    
+
 
         {/* User Profile Section */}
         {activeTab === 'profile' && (
@@ -303,6 +379,7 @@ const fetchUserProfile = async () => {
         )}
       </div>
     </div>
+    
   );
 };
 

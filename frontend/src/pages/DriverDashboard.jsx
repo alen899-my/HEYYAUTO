@@ -18,11 +18,32 @@ const DriverDashboard = () => {
   const [isReady, setIsReady] = useState(false);
   const [approvalStatus, setApprovalStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Approval request loading state
+  const [newBookings, setNewBookings] = useState([]);
 
   const handleToggle = () => {
     setIsReady(!isReady);
   };
-
+  const fetchBookings = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get('http://localhost:5000/api/driver-bookings', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log('Response Data:', response.data); // Add this line
+      setNewBookings(response.data);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
+  useEffect(() => {
+    if (activeTab === 'newBookings') {
+      fetchBookings();
+    }
+  }, [activeTab]);
+  
+    
   // Fetch Driver Profile
   const fetchDriverProfile = async () => {
     try {
@@ -197,6 +218,35 @@ const DriverDashboard = () => {
     {approvalStatus && <p className="approval-status">{approvalStatus}</p>}
   </div>
 )}
+ {/* New Bookings Section */}
+ {activeTab === 'newBookings' && (
+  <div className="new-bookings-section">
+    <h3>New Bookings</h3>
+    {newBookings.length > 0 ? (
+      <ul className="bookings-list">
+        {newBookings.map((booking) => (
+          <li key={booking._id} className="booking-card">
+            <div>
+              <p><strong>Pickup Point:</strong> {booking.pickUpPoint}</p>
+              <p><strong>Booking Date:</strong> {booking.bookingDate}</p>
+              <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
+              <p><strong>User:</strong> {booking.userId.fullName}</p>
+              <p><strong>Phone:</strong> {booking.userId.phoneNumber}</p>
+            </div>
+            <div>
+              <button className="accept-btn">Accept</button>
+              <button className="decline-btn">Decline</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No new bookings at the moment.</p>
+    )}
+  </div>
+)}
+
+
 
       </div>
     </div>

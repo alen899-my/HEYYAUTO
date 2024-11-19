@@ -3,6 +3,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const driverRoutes = require("./routes/driverRoutes");
 const User = require("./models/User");
+const bookingsRoute = require('./routes/bookings');
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors"); // Import cors
@@ -52,6 +53,7 @@ connectDB();
 // Route mounting
 app.use("/", authRoutes);
 app.use("/api/drivers", driverRoutes);
+app.use('/api', bookingsRoute);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
