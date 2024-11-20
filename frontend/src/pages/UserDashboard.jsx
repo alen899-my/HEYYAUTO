@@ -29,7 +29,12 @@ const UserDashboard = () => {
   const [pickUpPoint, setPickUpPoint] = useState('');
   const [bookingDate, setBookingDate] = useState('');
   const [bookingTime, setBookingTime] = useState('');
-  const [newBookings, setNewBookings] = useState([]);
+  // const [newBookings, setNewBookings] = useState([]);
+  // const [ongoingRides, setOngoingRides] = useState([]);
+  // const [completedRides, setCompletedRides] = useState([]);
+  // const [canceledRides, setCanceledRides] = useState([]);
+  const [bookings, setBookings] = useState([]); // Initialize bookings state
+  const [bookingLoading, setBookingLoading] = useState(true); // To handle loading state
   useEffect(() => {    
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
@@ -106,7 +111,24 @@ const fetchUserProfile = async () => {
       console.error('Error fetching drivers:', error);
     }
   };
-
+  const handleUserAction = async (bookingId, action) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/update-booking-status/${bookingId}`,
+        { status: action }
+      );
+      if (response.data) {
+        setOngoingRides((prev) =>
+          
+          prev.filter((ride) => ride._id !== bookingId)
+        ); // Remove from ongoing rides
+        alert(`Ride has been marked as ${action}.`);
+      }
+    } catch (error) {
+      console.error('Failed to update ride status:', error);
+    }
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     fetchDrivers();
@@ -145,7 +167,31 @@ const fetchUserProfile = async () => {
     }
   };
   
- 
+  const fetchUserBookings = async () => {
+    setBookingLoading(true);
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/user-rides/${user._id}`, // Include user._id here
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBookings(response.data);
+    } catch (error) {
+      console.error('Error fetching user bookings:', error);
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (activeTab === 'bookings') {
+      fetchUserBookings(); // Fetch only when tab is active
+    }
+  }, [activeTab]);
 
   return (
     <div className="user-dashboard">
@@ -329,22 +375,32 @@ const fetchUserProfile = async () => {
           </div>
         )}
         {/* Bookings Section */}
+      
         {activeTab === 'bookings' && (
-          <div className="bookings-section">
-            <h3>Your Bookings</h3>
-            <ul>
-              {bookings.map((booking) => (
-                <li key={booking.id}>
-                  <strong>{booking.driver}</strong> - {booking.date} - {booking.status}
-                  <button>View Details</button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+  <div className="bookings-section">
+    <h3>Your Bookings</h3>
+    {bookings.length > 0 ? (
+      <ul className="bookings-list">
+        {bookings.map((booking) => (
+          <li key={booking._id} className="booking-card">
+            <div>
+              <p><strong>Pickup Point:</strong> {booking.pickUpPoint}</p>
+              <p><strong>Booking Date:</strong> {booking.bookingDate}</p>
+              <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
+              <p><strong>Status:</strong> {booking.status}</p>
+              <p><strong>Driver:</strong> {booking.driverId.fullName}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No bookings found.</p>
+    )}
+  </div>
+)}
 
         {/* Payment History Section */}
-        {activeTab === 'paymentHistory' && (
+        {/* {activeTab === 'paymentHistory' && (
           <div className="payment-history-section">
             <h3>Payment History</h3>
             <ul>
@@ -355,7 +411,7 @@ const fetchUserProfile = async () => {
               ))}
             </ul>
           </div>
-        )}
+        )} */}
 
         {/* Support Section */}
         {activeTab === 'support' && (

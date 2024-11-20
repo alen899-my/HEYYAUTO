@@ -65,6 +65,33 @@ const DriverDashboard = () => {
       setLoading(false);
     }
   };
+  const handleBookingAction = async (bookingId, action) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/update-booking-status/${bookingId}`,
+        { status: action }
+      );
+  
+      if (response.data) {
+        setNewBookings((prev) =>
+          prev.filter((booking) => booking._id !== bookingId)
+        ); // Remove from new bookings
+  
+        // Notify user
+        alert(
+          action === 'onRide'
+            ? 'Ride accepted and is now in progress.'
+            : 'Ride rejected. Driver is busy or unavailable.'
+        );
+  
+        // Optionally refetch bookings (optional, for synchronization)
+        fetchBookings(); // Call the API to fetch updated bookings for the user
+      }
+    } catch (error) {
+      console.error('Failed to update booking status:', error);
+    }
+  };
+  
 
   // Fetch Approval Status
   const fetchApprovalStatus = async () => {
@@ -234,8 +261,18 @@ const DriverDashboard = () => {
               <p><strong>Phone:</strong> {booking.userId.phoneNumber}</p>
             </div>
             <div>
-              <button className="accept-btn">Accept</button>
-              <button className="decline-btn">Decline</button>
+              <button
+                className="accept-btn"
+                onClick={() => handleBookingAction(booking._id, 'onRide')}
+              >
+                Accept
+              </button>
+              <button
+                className="decline-btn"
+                onClick={() => handleBookingAction(booking._id, 'busy')}
+              >
+                Decline
+              </button>
             </div>
           </li>
         ))}
@@ -245,7 +282,6 @@ const DriverDashboard = () => {
     )}
   </div>
 )}
-
 
 
       </div>
