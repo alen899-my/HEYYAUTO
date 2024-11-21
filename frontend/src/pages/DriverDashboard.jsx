@@ -28,15 +28,16 @@ const DriverDashboard = () => {
     try {
       const response = await axios.get('http://localhost:5000/api/driver-bookings', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      console.log('Response Data:', response.data); // Add this line
+      console.log('Response Data:', response.data); // Add this log
       setNewBookings(response.data);
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error('Error fetching bookings:', error.response?.data || error.message);
     }
   };
+  
   useEffect(() => {
     if (activeTab === 'newBookings') {
       fetchBookings();
@@ -79,7 +80,7 @@ const DriverDashboard = () => {
   
         // Notify user
         alert(
-          action === 'onRide'
+          action === 'driverIsReady'
             ? 'Ride accepted and is now in progress.'
             : 'Ride rejected. Driver is busy or unavailable.'
         );
@@ -175,7 +176,7 @@ const DriverDashboard = () => {
           </li>
           <li className={activeTab === 'completedBookings' ? 'active' : ''} onClick={() => handleTabClick('completedBookings')}>
             <FaCheckCircle />
-            <span>Completed Bookings</span>
+            <span>Past Bookings</span>
           </li>
           <li className={activeTab === 'earnings' ? 'active' : ''} onClick={() => handleTabClick('earnings')}>
             <FaMoneyBillWave />
@@ -263,8 +264,10 @@ const DriverDashboard = () => {
             <div>
               <button
                 className="accept-btn"
-                onClick={() => handleBookingAction(booking._id, 'onRide')}
+                onClick={() => handleBookingAction(booking._id, 'driverIsReady')}
               >
+                
+              
                 Accept
               </button>
               <button
@@ -282,7 +285,43 @@ const DriverDashboard = () => {
     )}
   </div>
 )}
-
+ {/* past booking Section */}
+ {activeTab === 'pastBookings' && (
+  <div className="past-bookings-section">
+    <h3>Past Bookings</h3>
+    {pastBookings.length > 0 ? (
+      <ul className="bookings-list">
+        {pastBookings.map((booking) => (
+          <li key={booking._id} className="booking-card">
+            <div>
+              <p><strong>Pickup Point:</strong> {booking.pickUpPoint}</p>
+              <p><strong>Booking Date:</strong> {booking.bookingDate}</p>
+              <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
+              <p><strong>User:</strong> {booking.userId.fullName}</p>
+              <p><strong>Phone:</strong> {booking.userId.phoneNumber}</p>
+            </div>
+            <div>
+              <button
+                className="accept-btn"
+                onClick={() => handleBookingAction(booking._id, 'driverIsReady')}
+              >
+                Accept
+              </button>
+              <button
+                className="decline-btn"
+                onClick={() => handleBookingAction(booking._id, 'busy')}
+              > 
+                Decline
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No past bookings at the moment.</p>
+    )}
+  </div>
+ )}
 
       </div>
     </div>

@@ -51,7 +51,6 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -63,7 +62,9 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token, role: user.role });
+
+    // Include user ID in the response
+    res.json({ token, role: user.role, user: { _id: user._id } });
   } catch (error) {
     res.status(500).json({ msg: "Error logging in" });
   }

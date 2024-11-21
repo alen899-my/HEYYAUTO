@@ -29,6 +29,7 @@ const UserDashboard = () => {
   const [pickUpPoint, setPickUpPoint] = useState('');
   const [bookingDate, setBookingDate] = useState('');
   const [bookingTime, setBookingTime] = useState('');
+  const [isCompleted, setIsCompleted] = useState(false);
   // const [newBookings, setNewBookings] = useState([]);
   // const [ongoingRides, setOngoingRides] = useState([]);
   // const [completedRides, setCompletedRides] = useState([]);
@@ -111,23 +112,23 @@ const fetchUserProfile = async () => {
       console.error('Error fetching drivers:', error);
     }
   };
-  const handleUserAction = async (bookingId, action) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/api/update-booking-status/${bookingId}`,
-        { status: action }
-      );
-      if (response.data) {
-        setOngoingRides((prev) =>
+  // const handleUserAction = async (bookingId, action) => {
+  //   try {
+  //     const response = await axios.put(
+  //       `http://localhost:5000/api/update-booking-status/${bookingId}`,
+  //       { status: action }
+  //     );
+  //     if (response.data) {
+  //       setOngoingRides((prev) =>
           
-          prev.filter((ride) => ride._id !== bookingId)
-        ); // Remove from ongoing rides
-        alert(`Ride has been marked as ${action}.`);
-      }
-    } catch (error) {
-      console.error('Failed to update ride status:', error);
-    }
-  };
+  //         prev.filter((ride) => ride._id !== bookingId)
+  //       ); // Remove from ongoing rides
+  //       alert(`Ride has been marked as ${action}.`);
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to update ride status:', error);
+  //   }
+  // };
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -166,32 +167,83 @@ const fetchUserProfile = async () => {
       console.error('Error booking driver:', error);
     }
   };
-  
-  const fetchUserBookings = async () => {
-    setBookingLoading(true);
-    const token = localStorage.getItem('token');
+  const handleRideCompleted = async (bookingId) => {
+    const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/user-rides/${user._id}`, // Include user._id here
+      const response = await axios.patch(
+        `http://localhost:5000/api/bookings/${bookingId}/complete`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setBookings(response.data);
+      console.log("Ride marked as completed:", response.data);
+  
+      // Update the specific booking's status locally
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking._id === bookingId
+            ? { ...booking, status: "completed" }
+            : booking
+        )
+      );
     } catch (error) {
-      console.error('Error fetching user bookings:', error);
-    } finally {
-      setBookingLoading(false);
+      console.error(
+        "Error marking ride as completed:",
+        error.response?.data || error.message
+      );
     }
   };
   
-  useEffect(() => {
-    if (activeTab === 'bookings') {
-      fetchUserBookings(); // Fetch only when tab is active
+  const handleCancelRide = async (bookingId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.patch(
+        `http://localhost:5000/api/bookings/${bookingId}/cancel`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Ride canceled:", response.data);
+      fetchUserBookings(); // Refresh the bookings list
+    } catch (error) {
+      console.error("Error canceling ride:", error.response?.data || error.message);
     }
-  }, [activeTab]);
+  };
+  
+  
+  const fetchUserBookings = async () => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+  
+    // Handle missing userId
+    if (!userId) {
+      console.error("User ID is missing. Ensure login is successful and userId is stored in localStorage.");
+      return;
+    }
+  
+    try {
+      const response = await axios.get(`http://localhost:5000/api/user-rides/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Fetched Bookings:", response.data);
+      setBookings(response.data);
+    } catch (error) {
+      console.error("Error fetching user bookings:", error.response?.data || error.message);
+    }
+  };
+  
+  
+  useEffect(() => {
+    fetchUserBookings();
+  }, []);
 
   return (
     <div className="user-dashboard">
@@ -375,8 +427,7 @@ const fetchUserProfile = async () => {
           </div>
         )}
         {/* Bookings Section */}
-      
-        {activeTab === 'bookings' && (
+        {activeTab === "bookings" && (
   <div className="bookings-section">
     <h3>Your Bookings</h3>
     {bookings.length > 0 ? (
@@ -389,6 +440,25 @@ const fetchUserProfile = async () => {
               <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
               <p><strong>Status:</strong> {booking.status}</p>
               <p><strong>Driver:</strong> {booking.driverId.fullName}</p>
+            </div>
+            <div className="booking-actions">
+              {booking.status !== "completed" && (
+                <button
+                  onClick={() => handleRideCompleted(booking._id)}
+                  className="btn btn-success"
+                  disabled={booking.status === "completed"} // Disable if completed
+                >
+                  {booking.status === "completed" ? "Completed" : "Mark as Completed"}
+                </button>
+              )}
+              {booking.status === "pending" && (
+                <button
+                  onClick={() => handleCancelRide(booking._id)}
+                  className="btn btn-danger"
+                >
+                  Cancel Ride
+                </button>
+              )}
             </div>
           </li>
         ))}

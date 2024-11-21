@@ -1700,3 +1700,25 @@ driver dah */
     margin: 10px 5px 0 0;
   }
 }
+.btn {
+  padding: 8px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn btn-danger{
+  background-color: #dc3545;
+  color: white;
+}
+
+.booking-actions {
+  margin-top: 10px;
+}

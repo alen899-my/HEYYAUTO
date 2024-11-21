@@ -15,11 +15,21 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
+      console.log("Login Response:", data); // Log response for debugging
 
       if (data.token) {
         localStorage.setItem("token", data.token);
-
+      
+        // Ensure user ID is stored
+        if (data.user && data.user._id) {
+          localStorage.setItem("userId", data.user._id);
+          console.log("Stored userId:", data.user._id); // Debugging log
+        } else {
+          console.error("User ID is missing in response.");
+        }
+        // Navigate based on user role
         switch (data.role) {
           case "driver":
             navigate("/driver-dashboard");
@@ -47,11 +57,26 @@ const Login = () => {
       <div className="auth-card">
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <button type="submit">Login</button>
         </form>
-        <p className="switch-auth">Don't have an account? <span onClick={() => navigate("/signup")}>Sign up here</span></p>
+        <p className="switch-auth">
+          Don't have an account?{" "}
+          <span onClick={() => navigate("/signup")}>Sign up here</span>
+        </p>
       </div>
     </div>
   );
