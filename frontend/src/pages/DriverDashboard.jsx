@@ -19,6 +19,8 @@ const DriverDashboard = () => {
   const [approvalStatus, setApprovalStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Approval request loading state
   const [newBookings, setNewBookings] = useState([]);
+const [pastBookings, setPastBookings] = useState([]);
+
 
   const handleToggle = () => {
     setIsReady(!isReady);
@@ -41,10 +43,26 @@ const DriverDashboard = () => {
   useEffect(() => {
     if (activeTab === 'newBookings') {
       fetchBookings();
+    } else if (activeTab === 'pastBookings') {
+      fetchPastBookings();
+      
     }
   }, [activeTab]);
   
-    
+  const fetchPastBookings = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.get('http://localhost:5000/api/driver-past-bookings', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Past Bookings Data:', response.data); // Debug log
+      setPastBookings(response.data);
+    } catch (error) {
+      console.error('Error fetching past bookings:', error.response?.data || error.message);
+    }
+  };
   // Fetch Driver Profile
   const fetchDriverProfile = async () => {
     try {
@@ -92,6 +110,9 @@ const DriverDashboard = () => {
       console.error('Failed to update booking status:', error);
     }
   };
+  
+  
+  
   
 
   // Fetch Approval Status
@@ -174,7 +195,7 @@ const DriverDashboard = () => {
             <FaClipboardList />
             <span>New Bookings</span>
           </li>
-          <li className={activeTab === 'completedBookings' ? 'active' : ''} onClick={() => handleTabClick('completedBookings')}>
+          <li className={activeTab === 'completedBookings' ? 'active' : ''} onClick={() => handleTabClick('pastBookings')}>
             <FaCheckCircle />
             <span>Past Bookings</span>
           </li>
@@ -259,6 +280,7 @@ const DriverDashboard = () => {
               <p><strong>Booking Date:</strong> {booking.bookingDate}</p>
               <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
               <p><strong>User:</strong> {booking.userId.fullName}</p>
+              <p><strong>Status:</strong> {booking.status}</p>
               <p><strong>Phone:</strong> {booking.userId.phoneNumber}</p>
             </div>
             <div>
@@ -266,8 +288,6 @@ const DriverDashboard = () => {
                 className="accept-btn"
                 onClick={() => handleBookingAction(booking._id, 'driverIsReady')}
               >
-                
-              
                 Accept
               </button>
               <button
@@ -285,43 +305,26 @@ const DriverDashboard = () => {
     )}
   </div>
 )}
- {/* past booking Section */}
- {activeTab === 'pastBookings' && (
-  <div className="past-bookings-section">
-    <h3>Past Bookings</h3>
-    {pastBookings.length > 0 ? (
-      <ul className="bookings-list">
-        {pastBookings.map((booking) => (
-          <li key={booking._id} className="booking-card">
-            <div>
-              <p><strong>Pickup Point:</strong> {booking.pickUpPoint}</p>
-              <p><strong>Booking Date:</strong> {booking.bookingDate}</p>
-              <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
-              <p><strong>User:</strong> {booking.userId.fullName}</p>
-              <p><strong>Phone:</strong> {booking.userId.phoneNumber}</p>
-            </div>
-            <div>
-              <button
-                className="accept-btn"
-                onClick={() => handleBookingAction(booking._id, 'driverIsReady')}
-              >
-                Accept
-              </button>
-              <button
-                className="decline-btn"
-                onClick={() => handleBookingAction(booking._id, 'busy')}
-              > 
-                Decline
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p>No past bookings at the moment.</p>
-    )}
+
+{activeTab === 'pastBookings' && (
+  <div className="past-bookings-container">
+    <h2>Past Bookings</h2>
+    <ul className="past-bookings-list">
+      {pastBookings.map((booking) => (
+        <li key={booking._id} className="past-booking-item">
+          <p><strong>Pickup Point:</strong> {booking.pickUpPoint}</p>
+          <p><strong>Booking Date:</strong> {new Date(booking.bookingDate).toLocaleDateString()}</p>
+          <p><strong>Booking Time:</strong> {booking.bookingTime}</p>
+          <p><strong>User:</strong> {booking.userId.fullName}</p>
+          <p><strong>Status:</strong> {booking.status}</p>
+          <p><strong>Phone:</strong> {booking.userId.phoneNumber}</p>
+        </li>
+      ))}
+    </ul>
   </div>
- )}
+)}
+
+
 
       </div>
     </div>

@@ -14,6 +14,7 @@ router.post('/bookings', authMiddleware(), async (req, res) => {
       pickUpPoint,
       bookingDate,
       bookingTime,
+      status: 'pending', // Default status for new bookings
     });
     await booking.save();
     res.status(201).json(booking);
@@ -23,8 +24,11 @@ router.post('/bookings', authMiddleware(), async (req, res) => {
 });
 router.get('/driver-bookings', authMiddleware(['driver']), async (req, res) => {
   try {
-    const bookings = await Booking.find({ driverId: req.user.id })
-      .populate('userId', 'fullName phoneNumber') // Populate user info if needed
+    const bookings = await Booking.find({
+      driverId: req.user.id,
+      status: 'pending', // Only fetch new bookings
+    })
+      .populate('userId', 'fullName phoneNumber') // Populate user details if needed
       .exec();
     res.status(200).json(bookings);
   } catch (error) {
@@ -32,7 +36,25 @@ router.get('/driver-bookings', authMiddleware(['driver']), async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch bookings for driver' });
   }
 });
-const validStatuses = ['driverIsReady', 'completed', 'cancelled', 'pending','busy'];
+
+
+
+router.get('/driver-past-bookings', authMiddleware(['driver']), async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      driverId: req.user.id,
+      status: { $ne: 'pending' }, // Exclude new bookings
+    })
+      .populate('userId', 'fullName phoneNumber')
+      .exec();
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error('Error fetching past bookings:', error);
+    res.status(500).json({ error: 'Failed to fetch past bookings.' });
+  }
+});
+const validStatuses = ['driverIsReady', 'completed', 'cancelled', 'pending', 'busy', 'accepted', 'rejected'];
+
 
 router.put('/update-booking-status/:id', async (req, res) => {
   try {
@@ -59,6 +81,8 @@ router.put('/update-booking-status/:id', async (req, res) => {
   }
 });
 
+
+
 router.get('/user-rides/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -73,8 +97,6 @@ router.get('/user-rides/:userId', async (req, res) => {
       .populate('driverId', 'fullName phoneNumber vehicleNumber') // Populate driver details
       .exec();
 
-    console.log('Fetched rides:', rides);
-
     if (!rides.length) {
       return res.status(404).json({ message: 'No bookings found for this user.' });
     }
@@ -86,30 +108,32 @@ router.get('/user-rides/:userId', async (req, res) => {
   }
 });
 
-router.patch('/bookings/:id/complete', async (req, res) => {
+router.patch('/bookings/:id/complete', authMiddleware(), async (req, res) => {
   try {
     const bookingId = req.params.id;
     const booking = await Booking.findById(bookingId);
+
     if (!booking) {
       return res.status(404).json({ error: 'Booking not found' });
     }
-    // Update the booking status to complete
-    booking.status = 'complete';
-   
+
+    // Update the booking status to 'completed'
+    booking.status = 'completed';
     await booking.save();
-    res.json({ message: 'Booking marked as complete' });
+
+    res.json({ message: 'Booking marked as complete', booking });
   } catch (error) {
     console.error('Error marking booking as complete:', error);
     res.status(500).json({ error: 'Failed to mark booking as complete' });
   }
 });
 // Cancel a booking
-router.patch("/api/bookings/:id/cancel", authMiddleware(), async (req, res) => {
+router.patch("/bookings/:id/cancel", authMiddleware(), async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ msg: "Booking not found" });
 
-    booking.status = "canceled";
+    booking.status = "cancelled";
     await booking.save();
     res.json({ msg: "Ride canceled successfully", booking });
   } catch (error) {

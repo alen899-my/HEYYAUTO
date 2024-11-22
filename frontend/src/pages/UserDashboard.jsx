@@ -161,6 +161,7 @@ const fetchUserProfile = async () => {
         alert('Booking Confirmed!');
         setShowBookingModal(false);
         setSelectedDriver(null);
+        // fetchBookings();
        
       }
     } catch (error) {
@@ -179,6 +180,7 @@ const fetchUserProfile = async () => {
           },
         }
       );
+  
       console.log("Ride marked as completed:", response.data);
   
       // Update the specific booking's status locally
@@ -196,6 +198,7 @@ const fetchUserProfile = async () => {
       );
     }
   };
+  
   
   const handleCancelRide = async (bookingId) => {
     const token = localStorage.getItem("token");
@@ -442,24 +445,24 @@ const fetchUserProfile = async () => {
               <p><strong>Driver:</strong> {booking.driverId.fullName}</p>
             </div>
             <div className="booking-actions">
-              {booking.status !== "completed" && (
-                <button
-                  onClick={() => handleRideCompleted(booking._id)}
-                  className="btn btn-success"
-                  disabled={booking.status === "completed"} // Disable if completed
-                >
-                  {booking.status === "completed" ? "Completed" : "Mark as Completed"}
-                </button>
-              )}
-              {booking.status === "pending" && (
-                <button
-                  onClick={() => handleCancelRide(booking._id)}
-                  className="btn btn-danger"
-                >
-                  Cancel Ride
-                </button>
-              )}
-            </div>
+  {booking.status !== "completed" && (
+    <button
+      onClick={() => handleRideCompleted(booking._id)}
+      className="btn btn-success"
+    >
+      Mark as Completed
+    </button>
+  )}
+  {booking.status === "pending" && (
+    <button
+      onClick={() => handleCancelRide(booking._id)}
+      className="btn btn-danger"
+    >
+      Cancel Ride
+    </button>
+  )}
+</div>
+
           </li>
         ))}
       </ul>
