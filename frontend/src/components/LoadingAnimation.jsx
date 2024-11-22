@@ -1,3 +1,4 @@
+import running from "../images/running.png";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../styles/LoadingAnimation.css";
@@ -6,40 +7,42 @@ const LoadingAnimation = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Simulate loading (e.g., fetching data)
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 3000); // Adjust the duration as needed
+    }, 3000); // Adjust as needed
     return () => clearTimeout(timer);
   }, []);
 
   if (isLoaded) {
-    return null; // Once loading is complete, don't render the loader
+    return null; // Don't render once loading is complete
   }
 
   return (
     <div className="loading-container">
       <motion.div
-        className="loading-circle"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
+        className="moving-car"
+        initial={{ x: "100%", y: 0 }}
+        animate={{ x: "-100%", y: [0, -10, 0] }}
         transition={{
-          duration: 0.5,
+          duration: 4, // Increase duration for smoother motion
           repeat: Infinity,
-          repeatType: "reverse",
+          ease: "easeInOut", // Smooth easing function
         }}
-      />
-      <motion.h1
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{
-          duration: 1,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
+      
       >
-        Loading...
-      </motion.h1>
+        <img
+          src={running} // Replace with actual path
+          alt="Car"
+          className="car-image"
+        />
+        
+      </motion.div>
+      {/* Animated Dots */}
+      <div className="loading-dots">
+        <span>.</span>
+        <span>.</span>
+        <span>.</span>
+      </div>
     </div>
   );
 };
