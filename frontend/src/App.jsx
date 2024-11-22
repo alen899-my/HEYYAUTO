@@ -7,7 +7,7 @@ import Contact from './pages/Contact';
 import { Route, Routes } from 'react-router-dom';
 import Signup from './pages/Signup';
 import LoginPage from './pages/LoginPage';
-import DriverSignup from './pages/DriverSignup';
+// import DriverSignup from './pages/DriverSignup';
 import UserDashboard from './pages/UserDashboard';
 import DriverDashboard from './pages/DriverDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -37,7 +37,7 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/DriverSignup" element={<DriverSignup />} />
+        {/* <Route path="/DriverSignup" element={<DriverSignup />} /> */}
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/driver-dashboard" element={<DriverDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />

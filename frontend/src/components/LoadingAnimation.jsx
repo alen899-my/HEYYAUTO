@@ -40,7 +40,8 @@ const LoadingAnimation = () => {
       <div className="loading-dots">
         <span>.</span>
         <span>.</span>
-        <span>.</span>
+        <span>.</span>  
+        
       </div>
     </div>
   );

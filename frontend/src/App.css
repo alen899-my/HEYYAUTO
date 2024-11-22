@@ -21,16 +21,17 @@ body{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding: 5px 15px;
   background-color: #1c1c1c;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
+ 
 }
 
 .navbar-logo .logo-image {
-    height: 80px; /* Default size for larger screens */
+    height: 50px; /* Default size for larger screens */
     width: auto;
     border-radius: 30px;
     animation: spin 10s linear infinite;
@@ -64,6 +65,7 @@ body{
 .navbar-buttons {
   display: flex;
   gap: 10px;
+  
 }
 
 .nav-button {
@@ -75,6 +77,7 @@ body{
   cursor: pointer;
   font-size: 18px;
   transition: transform 0.3s ease;
+  height: auto;
 }
 
 .nav-button:hover {
@@ -640,147 +643,210 @@ body{
       font-size: 0.85em; /* Reduce description font size */
     }
   }/* auth-cards   */
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 20px;
-  padding-top: 60px; 
-}
-
-.auth-card {
-  background: #f9c319;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.auth-card h2 {
-  margin-bottom: 30px;
-  color: #000000;
-  font-size: 2rem;
-}
-
-.auth-card form {
-  display: flex;
-  flex-direction: column;
-}
-
-.auth-card input {
-  padding: 12px;
-  margin-bottom: 20px;
-  border-radius: 5px;
-  border: 1px solid #000000;
-  outline: none;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  color: #000000;
-}
-.auth-card input::placeholder {
-  color: #000000;
-}
-.auth-card input:focus {
-  border-color: #6a1b9a;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.auth-card button {
-  background-color: #000000;
-  color: #f9c319;
-  font-weight: bold;
-  padding: 12px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.auth-card button:hover {
-  background-color: #1C1C1C;
-}
-
-.switch-auth {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #000000;
-}
-
-.switch-auth span {
-  color: rgb(25, 81, 26);
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.switch-auth span:hover {
-  text-decoration: underline;
-}
-
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
   .auth-container {
-    padding: 10px;
-    padding-top: 50px;
-  }
-
-  .auth-card {
-    padding: 30px;
-    max-width: 90%;
-  }
-
-  .auth-card h2 {
-    font-size: 1.5rem;
-  }
-
-  .auth-card input {
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-
-  .auth-card button {
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-
-  .switch-auth {
-    font-size: 0.8rem;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .auth-container {
-    padding: 5px;
-    padding-top: 40px; 
-  }
-
-  .auth-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f9c319, #f07c19);
     padding: 20px;
-    max-width: 100%;
   }
-
-  .auth-card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
+  
+  .auth-card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-
-  .auth-card input {
-    font-size: 0.85rem;
-    padding: 8px;
+  
+  .auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
   }
-
-  .auth-card button {
-    font-size: 0.85rem;
-    padding: 8px;
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+   
   }
-
+  
+  .card-header h2 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
+    color: #888888;
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .card-header h2:hover {
+    color: #e0aa12;
+    text-shadow: 0 2px 5px rgba(106, 27, 154, 0.4);
+  }
+  
+  .card-header h2::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #e0aa12;
+    left: 50%;
+    bottom: -5px;
+    transition: width 0.3s ease, left 0.3s ease;
+  }
+  
+  .card-header h2:hover::after {
+    width: 100%;
+    left: 0;
+  }
+  
+  .card-header h2.active {
+    color: #1C1C1C;
+    transform: scale(1.1);
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .card-header h2.active::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: #1C1C1C;
+    left: 0;
+    bottom: -5px;
+    transition: none;
+  }
+  
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  input {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #f9f9f9;
+  }
+  
+  input:focus {
+    border-color: #000000;
+    box-shadow: 0 4px 15px rgba(106, 27, 154, 0.2);
+  }
+  
+  button {
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #e0aa12;
+    color: #000000;
+    font-weight: lighter;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+   
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(106, 27, 154, 0.3);
+  }
+  
   .switch-auth {
-    font-size: 0.75rem;
+    margin-top: 15px;
+    font-size: 0.95rem;
+    color: #666666;
   }
-}
+  
+  .switch-auth span {
+    color: #000000;
+    cursor: pointer;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .switch-auth span:hover {
+    color: #000000;
+    text-decoration: underline;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .auth-card {
+      padding: 20px;
+    }
+  
+    .card-header h2 {
+      font-size: 1.2rem;
+    }
+  
+    input {
+      font-size: 0.9rem;
+      padding: 10px;
+    }
+  
+    button {
+      padding: 12px;
+      font-size: 0.95rem;
+    }
+  
+    .switch-auth {
+      font-size: 0.85rem;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .auth-card {
+      padding: 15px;
+    }
+  
+    .card-header h2 {
+      font-size: 1.1rem;
+    }
+  
+    input {
+      font-size: 0.85rem;
+      padding: 8px;
+    }
+  
+    button {
+      font-size: 0.9rem;
+      padding: 10px;
+    }
+  
+    .switch-auth {
+      font-size: 0.8rem;
+    }
+  }
+  
+  
+  /* Responsive Styles */
+  @media screen and (max-width: 480px) {
+    .auth-card form {
+      grid-template-columns: 1fr; /* Single-column layout for smaller screens */
+    }
+  
+    .auth-card button,
+    .switch-auth {
+      grid-column: 1 / -1; /* Ensure button and text span all columns */
+    }
+  }
+  
 /* admin dashboard */
 
 .admin-dashboard {

@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* background-image: url("../src/images/background.jpg");  */
+ 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -31,7 +31,7 @@
 .loading-dots {
   position: absolute;
   top: 40px;
-  font-size: 2rem;
+  font-size: 4rem;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   display: flex;
@@ -63,4 +63,26 @@
   50% {
     opacity: 1;
   }
+}
+@media (max-width: 768px) {
+  .car-image {
+    width: 200px; /* Scale down */
+  }
+
+  .loading-dots {
+    font-size: 1.5rem; /* Reduce text size */
+  }
+}
+
+/* For small screens (mobile) */
+@media (max-width: 480px) {
+  .car-image {
+    width: ; /* Further scale down for small devices */
+  }
+
+  .loading-dots {
+    font-size: 2rem; /* Smaller font for dots */
+  }
+
+ 
 }
