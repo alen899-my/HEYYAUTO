@@ -1787,3 +1787,28 @@ driver dah */
     font-size: 14px;
   }
 }
+.sort-options {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.sort-options label {
+  font-size: 1rem;
+  color: #555;
+  margin-right: 8px;
+}
+
+.sort-dropdown {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.sort-dropdown:hover {
+  border-color: #888;
+  background-color: #f0f0f0;
+}

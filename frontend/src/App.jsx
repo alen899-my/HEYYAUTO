@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Navbar from './components/navbar';
 import Home from './pages/Home';
@@ -11,7 +11,23 @@ import DriverSignup from './pages/DriverSignup';
 import UserDashboard from './pages/UserDashboard';
 import DriverDashboard from './pages/DriverDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import LoadingAnimation from './components/LoadingAnimation'; // Import the loading animation component
+
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate a loading delay, such as fetching initial data
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Adjust the duration as needed
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingAnimation />; // Render the loading animation during loading
+  }
+
   return (
     <>
       <Navbar />
@@ -25,7 +41,6 @@ const App = () => {
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/driver-dashboard" element={<DriverDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-
       </Routes>
     </>
   );

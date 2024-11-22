@@ -129,7 +129,7 @@ const fetchUserProfile = async () => {
   //     console.error('Failed to update ride status:', error);
   //   }
   // };
-  
+  const validStatuses = ['driverIsReady', 'completed', 'cancelled', 'pending', 'busy', 'accepted', 'rejected'];
   const handleSubmit = (e) => {
     e.preventDefault();
     fetchDrivers();
@@ -219,6 +219,32 @@ const fetchUserProfile = async () => {
     }
   };
   
+  const handleSort = (criteria) => {
+    let sortedBookings;
+    if (criteria === "dateAsc") {
+      sortedBookings = [...bookings].sort((a, b) =>
+        new Date(a.bookingDate) - new Date(b.bookingDate)
+      );
+    } else if (criteria === "dateDesc") {
+      sortedBookings = [...bookings].sort((a, b) =>
+        new Date(b.bookingDate) - new Date(a.bookingDate)
+      );
+    } else if (criteria === "status") {
+      sortedBookings = [...bookings].sort(
+        (a, b) =>
+          validStatuses.indexOf(a.status) - validStatuses.indexOf(b.status)
+      );
+    } else if (criteria === "timeAsc") {
+      sortedBookings = [...bookings].sort((a, b) =>
+        a.bookingTime.localeCompare(b.bookingTime)
+      );
+    } else if (criteria === "timeDesc") {
+      sortedBookings = [...bookings].sort((a, b) =>
+        b.bookingTime.localeCompare(a.bookingTime)
+      );
+    }
+    setBookings(sortedBookings); // Assuming you use state for bookings
+  };
   
   const fetchUserBookings = async () => {
     const token = localStorage.getItem("token");
@@ -433,6 +459,21 @@ const fetchUserProfile = async () => {
         {activeTab === "bookings" && (
   <div className="bookings-section">
     <h3>Your Bookings</h3>
+    {/* Sorting Dropdown */}
+    <div className="sort-options">
+      <label htmlFor="sort-by">Sort by: </label>
+      <select
+        id="sort-by"
+        onChange={(e) => handleSort(e.target.value)}
+        className="sort-dropdown"
+      >
+        <option value="dateAsc">(latest booking)</option>
+        <option value="dateDesc">(earliest booking)</option>
+        <option value="status">Status</option>
+        
+      </select>
+    </div>
+
     {bookings.length > 0 ? (
       <ul className="bookings-list">
         {bookings.map((booking) => (
@@ -445,24 +486,23 @@ const fetchUserProfile = async () => {
               <p><strong>Driver:</strong> {booking.driverId.fullName}</p>
             </div>
             <div className="booking-actions">
-  {booking.status !== "completed" && (
-    <button
-      onClick={() => handleRideCompleted(booking._id)}
-      className="btn btn-success"
-    >
-      Mark as Completed
-    </button>
-  )}
-  {booking.status === "pending" && (
-    <button
-      onClick={() => handleCancelRide(booking._id)}
-      className="btn btn-danger"
-    >
-      Cancel Ride
-    </button>
-  )}
-</div>
-
+              {booking.status !== "completed" && (
+                <button
+                  onClick={() => handleRideCompleted(booking._id)}
+                  className="btn btn-success"
+                >
+                  Mark as Completed
+                </button>
+              )}
+              {booking.status === "pending" && (
+                <button
+                  onClick={() => handleCancelRide(booking._id)}
+                  className="btn btn-danger"
+                >
+                  Cancel Ride
+                </button>
+              )}
+            </div>
           </li>
         ))}
       </ul>
@@ -471,6 +511,7 @@ const fetchUserProfile = async () => {
     )}
   </div>
 )}
+
 
         {/* Payment History Section */}
         {/* {activeTab === 'paymentHistory' && (
