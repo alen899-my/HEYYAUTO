@@ -35,7 +35,6 @@ const LoadingAnimation = () => {
           alt="Car"
           className="car-image"
         />
-        
       </motion.div>
       {/* Animated Dots */}
       <div className="loading-dots">
